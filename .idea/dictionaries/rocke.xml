@@ -1,0 +1,16 @@
+<component name="ProjectDictionaryState">
+  <dictionary name="rocke">
+    <words>
+      <w>cifar</w>
+      <w>conv</w>
+      <w>dataiter</w>
+      <w>datasets</w>
+      <w>testloader</w>
+      <w>testset</w>
+      <w>torchvision</w>
+      <w>trainloader</w>
+      <w>trainset</w>
+      <w>unnormalize</w>
+    </words>
+  </dictionary>
+</component>
