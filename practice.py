@@ -24,6 +24,7 @@ testloader = torch.utils.data.DataLoader(testset, batch_size=4,
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog',
            'frog', 'horse', 'ship', 'truck')
 
+
 # SHOWING IMAGES FOR FUN
 def imshow(img):
     img = img / 2 + .5  # this is too unnormalize
@@ -34,9 +35,9 @@ def imshow(img):
 
 dataiter = iter(trainloader)
 images, labels = dataiter.next()
-
-imshow(torchvision.utils.make_grid(images))
-print(' '.join('%5s' % classes[labels[j]] for j in range(4)))
+#
+# imshow(torchvision.utils.make_grid(images))
+# print(' '.join('%5s' % classes[labels[j]] for j in range(4)))
 
 
 class Net(nn.Module):
@@ -64,39 +65,67 @@ class Net(nn.Module):
         return x
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print(device)
+# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# print(device)
 PATH = './cifar_net.pth'
 net = Net()
-net.to(device)
+# net.to(device)
 net.load_state_dict(torch.load(PATH))
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-for epoch in range(2):
+# TRAINING
+# for epoch in range(2):
+#
+#     running_loss = 0.0
+#     for i, data in enumerate(trainloader, 0):
+#         # get the inputs; data is a list of [inputs, labels]
+#         inputs, labels = data[0].to(device), data[1].to(device)
+#
+#         optimizer.zero_grad()
+#
+#         outputs = net(inputs)
+#         loss = criterion(outputs, labels)
+#         loss.backward()
+#         optimizer.step()
+#
+#         running_loss += loss.item()
+#         if i % 2000 == 1999:
+#             print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 2000))
+#             running_loss = 0.0
+#
+# print('Finished Training')
+# torch.save(net.state_dict(), PATH)
 
-    running_loss = 0.0
-    for i, data in enumerate(trainloader, 0):
-        # get the inputs; data is a list of [inputs, labels]
-        inputs, labels = data[0].to(device), data[1].to(device)
+# TESTING
+# dataiter = iter(testloader)
+# images, labels = dataiter.next()
 
-        optimizer.zero_grad()
+# print images
+# imshow(torchvision.utils.make_grid(images))
+# print('GroundTruth; ', ' '.join('%5s' % classes[labels[j]] for j in range(4)))
+#
+# outputs = net(images)
+# _, predicted = torch.max(outputs, 1)
+# print(predicted)
+# print('Predicted: ', ' '.join('%5s' % classes[predicted[j]]
+#                               for j in range(4)))
 
-        outputs = net(inputs)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
-
-        running_loss += loss.item()
-        if i % 2000 == 1999:
-            print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 2000))
-            running_loss = 0.0
-
-print('Finished Training')
-
-torch.save(net.state_dict(), PATH)
-
+class_correct = list(0. for i in range(10))
+class_total = list(0. for i in range(10))
+with torch.no_grad():
+    for data in testloader:
+        images, labels = data
+        outputs = net(images)
+        _, predicted = torch.max(outputs, 1)
+        c = (predicted == labels).squeeze()
+        for i in range(4):
+            label = labels[i]
+            class_correct[label] += c[i].item()
+            class_total[label] += 1
 
 
-
+for i in range(10):
+    print('Accuracy of %5s : %2d %%' % (
+        classes[i], 100 * class_correct[i] / class_total[i]))
